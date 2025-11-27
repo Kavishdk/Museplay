@@ -1,88 +1,78 @@
-# Deployment Guide for MusePlay
+# 🚀 Deployment Guide for MusePlay
 
-Since this application uses a **Frontend (React)**, a **Backend (Node.js/Socket.IO)**, and a **Database**, the deployment strategy involves three parts.
-
-## Prerequisite: Switch Database to PostgreSQL
-Currently, the project uses **SQLite**, which is a file-based database. This works great locally but is **not suitable** for most cloud hosting platforms (like Vercel, Render, or Heroku) because their file systems are ephemeral (data is lost on restart).
-
-**Recommended**: Switch to **PostgreSQL**.
-1.  **Get a Free Database**: Sign up for [Neon.tech](https://neon.tech) or [Supabase](https://supabase.com) and create a new project. Copy the connection string (e.g., `postgres://user:pass@...`).
-2.  **Update Prisma**:
-    *   In `prisma/schema.prisma`, change:
-        ```prisma
-        datasource db {
-          provider = "postgresql"
-          url      = env("DATABASE_URL")
-        }
-        ```
-    *   Delete the `prisma/migrations` folder and `dev.db`.
-    *   Run `npx prisma migrate dev --name init` to regenerate the client.
+Your project is **fully configured** for free cloud deployment.
+Follow these steps exactly to get your app live.
 
 ---
 
-## Option 1: Cloud Hosting (Recommended)
+## Phase 1: The Database (PostgreSQL)
+We need a persistent database in the cloud.
 
-### 1. Deploy Backend (Render.com)
-Render offers a free tier for Node.js services.
+1.  **Sign up** for [Neon.tech](https://neon.tech) (Free Tier).
+2.  **Create a Project**: Name it `museplay-db`.
+3.  **Copy Connection String**: It will look like:
+    `postgres://alex:password123@ep-cool-frog-123456.us-east-2.aws.neon.tech/neondb?sslmode=require`
+    *Keep this safe, you will need it for the Backend.*
 
-1.  Push your code to GitHub.
-2.  Sign up at [Render.com](https://render.com).
-3.  Click **New +** -> **Web Service**.
-4.  Connect your GitHub repository.
-5.  **Settings**:
-    *   **Root Directory**: `.` (or leave empty)
+---
+
+## Phase 2: The Backend (Render.com)
+We will host the Node.js server here.
+
+1.  **Sign up** for [Render.com](https://render.com).
+2.  Click **New +** -> **Web Service**.
+3.  **Connect GitHub**: Select your `museplay` repository.
+4.  **Configure Settings**:
+    *   **Name**: `museplay-api`
+    *   **Region**: Choose one close to you (e.g., Singapore, Frankfurt).
+    *   **Branch**: `main`
+    *   **Root Directory**: `.` (Leave as default)
+    *   **Runtime**: `Node`
     *   **Build Command**: `npm install && npx prisma generate`
     *   **Start Command**: `node backend/server.js`
-6.  **Environment Variables**:
-    *   `DATABASE_URL`: Your PostgreSQL connection string.
-    *   `GOOGLE_CLIENT_ID`: (Optional) Your Google OAuth ID.
-7.  Click **Create Web Service**.
-8.  **Copy the Backend URL**: Once deployed, copy the URL (e.g., `https://museplay-backend.onrender.com`).
+    *   **Instance Type**: Free
+5.  **Environment Variables** (Scroll down to "Advanced"):
+    *   Key: `DATABASE_URL`
+    *   Value: *(Paste your Neon Connection String from Phase 1)*
+6.  Click **Create Web Service**.
+7.  **Wait**: It will take a few minutes. Once it says "Live", copy the URL at the top (e.g., `https://museplay-api.onrender.com`).
 
-### 2. Deploy Frontend (Vercel)
-Vercel is the best place to host React/Vite apps.
+---
 
-1.  Sign up at [Vercel.com](https://vercel.com).
+## Phase 3: The Frontend (Vercel)
+We will host the React UI here.
+
+1.  **Sign up** for [Vercel.com](https://vercel.com).
 2.  Click **Add New...** -> **Project**.
-3.  Import your GitHub repository.
-4.  **Environment Variables**:
-    *   `VITE_API_BASE_URL`: Paste your Render Backend URL (e.g., `https://museplay-backend.onrender.com/api`).
-    *   *Note: Do NOT add a trailing slash.*
-5.  Click **Deploy**.
+3.  **Import Git Repository**: Select `museplay`.
+4.  **Configure Project**:
+    *   **Framework Preset**: Vite (should be auto-detected).
+    *   **Root Directory**: `.` (Leave as default)
+5.  **Environment Variables**:
+    *   Key: `VITE_API_BASE_URL`
+    *   Value: *(Paste your Render Backend URL from Phase 2)*
+        *   **IMPORTANT**: Add `/api` at the end.
+        *   Example: `https://museplay-api.onrender.com/api`
+6.  Click **Deploy**.
+7.  **Wait**: Once done, you will get a domain (e.g., `https://museplay.vercel.app`). Copy this.
 
 ---
 
-## Option 2: VPS (DigitalOcean / Hetzner)
-If you want to keep using **SQLite**, you must use a VPS (Virtual Private Server).
+## Phase 4: Final Connection
+Now we need to tell the Backend to trust requests from your new Frontend.
 
-1.  **Rent a Server**: Get a droplet from DigitalOcean (~$4/mo).
-2.  **Setup**: SSH into the server and install Node.js, Nginx, and PM2.
-3.  **Clone & Install**:
-    ```bash
-    git clone https://github.com/yourusername/museplay.git
-    cd museplay
-    npm install
-    npx prisma migrate deploy
-    ```
-4.  **Build Frontend**:
-    ```bash
-    npm run build
-    ```
-5.  **Run Backend**:
-    ```bash
-    pm2 start backend/server.js --name "museplay-api"
-    ```
-6.  **Serve Frontend**: Configure Nginx to serve the `dist` folder and proxy `/api` requests to `localhost:3001`.
+1.  Go back to your **Render Dashboard** -> `museplay-api`.
+2.  Go to **Environment**.
+3.  Add a new variable:
+    *   Key: `FRONTEND_URL`
+    *   Value: *(Paste your Vercel Frontend URL from Phase 3)*
+        *   Example: `https://museplay.vercel.app` (No trailing slash)
+4.  Click **Save Changes**. Render will automatically restart your server.
 
 ---
 
-## Post-Deployment Checks
-1.  **CORS**: Ensure your Backend allows requests from your Frontend URL.
-    *   In `backend/server.js`, update `cors`:
-        ```javascript
-        app.use(cors({ 
-            origin: process.env.FRONTEND_URL || 'http://localhost:3000', 
-            credentials: true 
-        }));
-        ```
-    *   Add `FRONTEND_URL` to your Backend Environment Variables.
+## 🎉 Done!
+Visit your Vercel URL (`https://museplay.vercel.app`).
+1.  **Sign Up**: Create a new account (this initializes the DB tables).
+2.  **Create a Room**: Test the flow.
+3.  **Share**: Send the link to your friends!
