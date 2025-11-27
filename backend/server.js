@@ -15,7 +15,10 @@ const app = express();
 const prisma = new PrismaClient();
 
 // CORS configuration
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true
+}));
 app.use(express.json());
 
 // Simple session store (in production, use Redis or similar)
@@ -379,7 +382,12 @@ async function getVideoTitle(videoId) {
 
 // ============ SERVER STARTUP ============
 const httpServer = http.createServer(app);
-const io = new SocketIOServer(httpServer, { cors: { origin: 'http://localhost:3000', credentials: true } });
+const io = new SocketIOServer(httpServer, {
+    cors: {
+        origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+        credentials: true
+    }
+});
 
 io.on('connection', (socket) => {
     socket.on('joinRoom', (roomId) => {
