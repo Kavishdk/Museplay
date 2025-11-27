@@ -1,3 +1,77 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 230 15% 12%;
+    --foreground: 230 15% 90%;
+    
+    --card: 230 15% 16%;
+    --card-foreground: 230 15% 90%;
+ 
+    --popover: 230 15% 12%;
+    --popover-foreground: 230 15% 90%;
+ 
+    --primary: 260 80% 60%;
+    --primary-foreground: 0 0% 100%;
+ 
+    --secondary: 230 15% 20%;
+    --secondary-foreground: 230 15% 90%;
+ 
+    --muted: 230 15% 20%;
+    --muted-foreground: 230 15% 60%;
+ 
+    --accent: 260 80% 60%;
+    --accent-foreground: 0 0% 100%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 230 15% 20%;
+    --input: 230 15% 20%;
+    --ring: 260 80% 60%;
+ 
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 230 15% 12%;
+    --foreground: 230 15% 90%;
+    /* ... same values for dark mode as base for now, can be tweaked */
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  .custom-button {
+    @apply bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .custom-button-outline {
+    @apply border border-purple-500 text-purple-400 hover:bg-purple-500/10 hover:text-purple-300 font-semibold py-2 px-4 rounded-lg transition-all duration-200;
+  }
+
+  .glass-card {
+    @apply bg-gray-800/50 backdrop-blur-md border border-white/10 shadow-xl;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}

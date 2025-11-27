@@ -1,75 +1,96 @@
-# MusePlay - React/Vite Frontend
+# MusePlay - Collaborative Music Streaming
 
-This is the React.js (Vite) frontend for the MusePlay application.
+MusePlay is a real-time collaborative music streaming application that allows users to create rooms, join them, and listen to music together. Users can add songs from YouTube to a shared queue, vote on them, and the highest-voted songs play next.
 
-## Project Structure
+![MusePlay Screenshot](https://via.placeholder.com/800x400?text=MusePlay+Dashboard)
 
-```
-.
-├── public/                 # Static assets
-├── src/
-│   ├── components/         # Reusable UI components
-│   ├── lib/                # Utility functions and API clients
-│   ├── pages/              # Page components
-│   ├── App.css             # Global styles
-│   ├── App.jsx             # Main App component with routing
-│   └── main.jsx            # Entry point
-├── index.html              # HTML template
-├── package.json            # Dependencies and scripts
-├── vite.config.js          # Vite configuration
-├── tailwind.config.js      # Tailwind CSS configuration
-└── postcss.config.js       # PostCSS configuration
-```
+## Features
+
+*   **Real-time Synchronization**: Room state (queue, current song, votes) is synced instantly across all connected users using WebSockets.
+*   **Room Management**: Create unique rooms for different groups or vibes.
+*   **Voting System**: Upvote or downvote songs to influence the playback order.
+*   **YouTube Integration**: Add any song from YouTube by pasting the URL.
+*   **Authentication**: Secure signup and login system.
+*   **Responsive Design**: Modern, glassmorphism-inspired UI that works on desktop and mobile.
+
+## Tech Stack
+
+### Frontend
+*   **React**: UI library.
+*   **Vite**: Build tool and dev server.
+*   **Tailwind CSS**: Utility-first CSS framework for styling.
+*   **Socket.IO Client**: For real-time communication.
+*   **React Router**: For client-side routing.
+*   **Lucide React**: For icons.
+
+### Backend
+*   **Node.js & Express**: Server runtime and framework.
+*   **Socket.IO**: Real-time event-based communication.
+*   **Prisma**: ORM for database interaction.
+*   **SQLite**: Database (can be easily switched to PostgreSQL/MySQL).
+*   **Bcryptjs**: Password hashing.
 
 ## Getting Started
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+### Prerequisites
+*   Node.js (v16 or higher)
+*   npm or yarn
 
-2. Create a `.env` file based on `.env.example`:
-   ```bash
-   cp .env.example .env
-   ```
+### Installation
 
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/yourusername/museplay.git
+    cd museplay
+    ```
 
-4. Build for production:
-   ```bash
-   npm run build
-   ```
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
 
-## Environment Variables
+3.  **Environment Setup**
+    Create a `.env` file in the root directory:
+    ```env
+    # Optional: Google Client ID for OAuth (if enabled)
+    GOOGLE_CLIENT_ID=your_google_client_id
+    
+    # Database URL (defaults to local SQLite file)
+    DATABASE_URL="file:./dev.db"
+    ```
 
-Create a `.env` file in the root of the project with the following variables:
+4.  **Database Setup**
+    Initialize the SQLite database:
+    ```bash
+    npx prisma migrate dev --name init
+    ```
 
-```
-VITE_API_BASE_URL=http://localhost:3001/api
-```
+### Running the Application
 
-## API Integration
+1.  **Start the Backend**
+    ```bash
+    npm run dev:backend
+    ```
+    The server will start on `http://localhost:3001`.
 
-The frontend connects directly to the backend API. Make sure your backend is running and accessible at the URL specified in `VITE_API_BASE_URL`.
+2.  **Start the Frontend**
+    ```bash
+    npm run dev
+    ```
+    The application will be available at `http://localhost:3000`.
 
-## Authentication
+## Usage
 
-Authentication is handled through custom components and API calls. The login flow includes:
-- Email/Password authentication
-- Google OAuth (to be implemented)
-- Email magic link (to be implemented)
+1.  **Sign Up/Login**: Create an account to get started.
+2.  **Create a Room**: Go to the dashboard and create a new room (e.g., "Chill Vibes").
+3.  **Invite Friends**: Share the Room ID or let them join from the lobby.
+4.  **Add Music**: Paste a YouTube link to add it to the queue.
+5.  **Vote**: Thumbs up your favorite tracks to bump them up the list!
 
-## Styling
+## Contributing
 
-The application uses Tailwind CSS for styling, maintaining the same visual design as the original Next.js version.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## Components
+## License
 
-- `Appbar`: Navigation header with authentication controls
-- `LandingPage`: Main landing page with features and signup form
-- `Dashboard`: Main application dashboard for managing streams
-- `Login`: Authentication page
-- UI components: Button, Input, Card (from shadcn/ui)
+This project is licensed under the MIT License.

@@ -1,54 +1,41 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { login } from '../lib/api';
+import { register } from '../lib/api';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function Login({ setUser }) {
+export default function Signup({ setUser }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleEmailLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-        setLoading(true);
 
-        try {
-            if (!email || !password) {
-                setError('Please enter both email and password');
-                setLoading(false);
-                return;
-            }
-
-            const user = await login(email, password, 'email');
-            setUser(user);
-            navigate('/dashboard');
-        } catch (error) {
-            console.error('Login failed:', error);
-            setError(error.message || 'Login failed. Please check your credentials.');
-        } finally {
-            setLoading(false);
+        if (password !== confirmPassword) {
+            setError('Passwords do not match');
+            return;
         }
-    };
 
-    const handleGoogleLogin = async () => {
-        setError('');
+        if (password.length < 6) {
+            setError('Password must be at least 6 characters');
+            return;
+        }
+
         setLoading(true);
 
         try {
-            // For demo, using email as identifier
-            const demoEmail = `user${Date.now()}@google.com`;
-            // Google login doesn't need password in our demo flow
-            const user = await login(demoEmail, null, 'google');
+            const user = await register(email, password);
             setUser(user);
             navigate('/dashboard');
         } catch (error) {
-            console.error('Google login failed:', error);
-            setError(error.message || 'Google login failed. Please try again.');
+            console.error('Registration failed:', error);
+            setError(error.message || 'Registration failed. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -59,10 +46,10 @@ export default function Login({ setUser }) {
             <Card className="w-full max-w-md bg-gray-800/50 backdrop-blur-md border-gray-700">
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold text-center text-purple-400">
-                        Sign In to MusePlay
+                        Create Account
                     </CardTitle>
                     <CardDescription className="text-center text-gray-400">
-                        Enter your email and password to continue
+                        Sign up to start voting on streams
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -72,7 +59,7 @@ export default function Login({ setUser }) {
                         </div>
                     )}
 
-                    <form onSubmit={handleEmailLogin} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
                             <Input
                                 type="email"
@@ -95,34 +82,30 @@ export default function Login({ setUser }) {
                                 disabled={loading}
                             />
                         </div>
+                        <div className="space-y-2">
+                            <Input
+                                type="password"
+                                placeholder="Confirm Password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className="bg-gray-700/50 text-white border-gray-600 focus:border-purple-400"
+                                required
+                                disabled={loading}
+                            />
+                        </div>
                         <Button
                             type="submit"
                             className="w-full custom-button"
                             disabled={loading}
                         >
-                            {loading ? 'Signing In...' : 'Sign In'}
+                            {loading ? 'Creating Account...' : 'Sign Up'}
                         </Button>
                     </form>
 
-                    <div className="my-4 flex items-center">
-                        <div className="flex-grow border-t border-gray-600"></div>
-                        <span className="mx-4 text-gray-400">or</span>
-                        <div className="flex-grow border-t border-gray-600"></div>
-                    </div>
-
-                    <Button
-                        onClick={handleGoogleLogin}
-                        className="w-full custom-button-outline"
-                        variant="outline"
-                        disabled={loading}
-                    >
-                        Sign in with Google
-                    </Button>
-
                     <div className="mt-4 text-center text-sm text-gray-400">
-                        Don't have an account?{' '}
-                        <Link to="/signup" className="text-purple-400 hover:underline">
-                            Sign up
+                        Already have an account?{' '}
+                        <Link to="/login" className="text-purple-400 hover:underline">
+                            Sign in
                         </Link>
                     </div>
                 </CardContent>

@@ -1,35 +1,48 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Lobby from './pages/Lobby';
 import { Appbar } from './components/Appbar';
 import './App.css';
+
+// Real auth helpers
+import {
+  fetchUserContext,
+  getSessionToken,
+} from '@/lib/api';
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Simulate user authentication check
+  // Load data on mount
   useEffect(() => {
-    const checkUserAuth = async () => {
+    const loadData = async () => {
       try {
-        // In a real app, this would call your backend API
-        // const response = await fetch('/api/userContext');
-        // const userData = await response.json();
-        // setUser(userData);
-      } catch (error) {
-        console.error('Authentication check failed:', error);
+        const token = getSessionToken();
+        if (token) {
+          // Authenticated user
+          const userDetails = await fetchUserContext();
+          setUser(userDetails);
+        }
+      } catch (err) {
+        console.error('Error loading dashboard data:', err);
       } finally {
         setLoading(false);
       }
     };
-
-    checkUserAuth();
+    loadData();
   }, []);
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+        Loading...
+      </div>
+    );
   }
 
   return (
@@ -37,8 +50,16 @@ function App() {
       <Appbar user={user} setUser={setUser} />
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/dashboard" element={<Dashboard user={user} />} />
+        <Route
+          path="/dashboard"
+          element={user ? <Lobby user={user} /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/room/:roomId"
+          element={user ? <Dashboard user={user} /> : <Navigate to="/login" replace />}
+        />
         <Route path="/login" element={<Login setUser={setUser} />} />
+        <Route path="/signup" element={<Signup setUser={setUser} />} />
       </Routes>
     </div>
   );

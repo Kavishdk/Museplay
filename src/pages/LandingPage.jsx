@@ -1,128 +1,93 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Music, Users, Radio, ArrowRight } from "lucide-react";
-import { useState } from "react";
 
 export default function LandingPage() {
-  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+  const [showJoinInput, setShowJoinInput] = useState(false);
+  const [roomCode, setRoomCode] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle email submission
-    console.log("Email submitted:", email);
+  const handleJoin = () => {
+    if (roomCode.trim()) {
+      navigate(`/room/${roomCode}`);
+    }
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center space-y-4 text-center">
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-                  Let Your Fans <span className="text-purple-400">Choose the Beat</span>
-                </h1>
-                <p className="mx-auto max-w-[700px] text-gray-400 md:text-xl">
-                  Where creators and fans unite to create the perfect soundtrack for every stream.
-                </p>
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+      <main className="flex-grow flex flex-col items-center justify-center p-8 text-center animate-fade-in">
+        <div className="max-w-3xl space-y-8">
+          <h1 className="text-6xl font-bold tracking-tight mb-4">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+              MusePlay
+            </span>
+          </h1>
+          <p className="text-xl text-gray-300 mb-8 leading-relaxed max-w-2xl mx-auto">
+            The ultimate collaborative music streaming experience. Create rooms, vote on songs, and listen together in real-time.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center min-h-[80px]">
+            {showJoinInput ? (
+              <div className="flex w-full max-w-sm items-center space-x-2 animate-fade-in">
+                <Input
+                  type="text"
+                  placeholder="Enter Room Code"
+                  value={roomCode}
+                  onChange={(e) => setRoomCode(e.target.value)}
+                  className="bg-gray-800/50 border-gray-600 text-white focus:border-purple-500"
+                />
+                <Button onClick={handleJoin} className="custom-button">
+                  Join
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowJoinInput(false)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  Cancel
+                </Button>
               </div>
-              <div className="space-x-4">
-                <Button size="lg" className="custom-button">Get Started</Button>
-                <Button variant="outline" size="lg" className="custom-button-outline">Learn More</Button>
-              </div>
+            ) : (
+              <>
+                <Button
+                  onClick={() => navigate('/signup')}
+                  size="lg"
+                  className="custom-button text-lg px-8 py-6 w-full sm:w-auto"
+                >
+                  Get Started
+                </Button>
+                <Button
+                  onClick={() => setShowJoinInput(true)}
+                  variant="outline"
+                  size="lg"
+                  className="custom-button-outline text-lg px-8 py-6 w-full sm:w-auto"
+                >
+                  Join a Room
+                </Button>
+              </>
+            )}
+          </div>
+
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+            <div className="glass-card p-6 rounded-xl">
+              <h3 className="text-lg font-semibold text-purple-400 mb-2">Real-time Voting</h3>
+              <p className="text-gray-400">Upvote your favorite tracks to push them to the top of the queue.</p>
+            </div>
+            <div className="glass-card p-6 rounded-xl">
+              <h3 className="text-lg font-semibold text-purple-400 mb-2">Live Sync</h3>
+              <p className="text-gray-400">Listen together with friends, perfectly synchronized across all devices.</p>
+            </div>
+            <div className="glass-card p-6 rounded-xl">
+              <h3 className="text-lg font-semibold text-purple-400 mb-2">Easy Sharing</h3>
+              <p className="text-gray-400">Just paste a YouTube link to add any song to the playlist instantly.</p>
             </div>
           </div>
-        </section>
-        <section id="features" className="w-full py-12 md:py-24 lg:py-32 bg-gray-800">
-          <div className="container px-4 md:px-6">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12 text-purple-400">Key Features</h2>
-            <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3">
-              <div className="flex flex-col items-center space-y-3 text-center">
-                <Users className="h-12 w-12 text-purple-400" />
-                <h3 className="text-xl font-bold">Interactive Streaming</h3>
-                <p className="text-gray-400">Engage with your audience in real-time music selection.</p>
-              </div>
-              <div className="flex flex-col items-center space-y-3 text-center">
-                <Radio className="h-12 w-12 text-purple-400" />
-                <h3 className="text-xl font-bold">Vast Music Library</h3>
-                <p className="text-gray-400">Access millions of tracks across all genres.</p>
-              </div>
-              <div className="flex flex-col items-center space-y-3 text-center">
-                <Music className="h-12 w-12 text-purple-400" />
-                <h3 className="text-xl font-bold">High-Quality Audio</h3>
-                <p className="text-gray-400">Crystal clear sound for the best listening experience.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-        <section id="how-it-works" className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container px-4 md:px-6">
-            <div className="grid gap-10 px-10 md:gap-16 lg:grid-cols-2">
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-purple-400">How It Works</h2>
-                <p className="max-w-[600px] text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  StreamTunes brings creators and listeners together for an interactive music experience.
-                </p>
-                <ul className="grid gap-4">
-                  <li className="flex items-center gap-4">
-                    <span className="font-bold text-purple-400">1.</span> Creators start a stream
-                  </li>
-                  <li className="flex items-center gap-4">
-                    <span className="font-bold text-purple-400">2.</span> Fans join and vote for songs
-                  </li>
-                  <li className="flex items-center gap-4">
-                    <span className="font-bold text-purple-400">3.</span> Most voted songs play next
-                  </li>
-                </ul>
-              </div>
-              <div className="flex items-center justify-center">
-                <div className="relative w-[300px] h-[300px] bg-purple-900/30 rounded-full overflow-hidden">
-                  <div className="absolute inset-0 flex items-center justify-center text-4xl font-bold text-purple-400">
-                    StreamTunes
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-purple-900 text-white">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center space-y-4 text-center">
-              <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Ready to Revolutionize Your Streams?</h2>
-                <p className="mx-auto max-w-[600px] text-purple-100 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Join StreamTunes today and start creating unforgettable music experiences with your audience.
-                </p>
-              </div>
-              <div className="w-full max-w-sm space-y-2">
-                <form className="flex space-x-2" onSubmit={handleSubmit}>
-                  <Input 
-                    className="max-w-lg flex-1 bg-purple-800 text-white border-purple-700 focus:ring-purple-400 focus:border-purple-400" 
-                    placeholder="Enter your email" 
-                    type="email" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  <Button type="submit" className="bg-white text-purple-900 hover:bg-purple-100">
-                    Get Started
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </section>
+        </div>
       </main>
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t border-gray-800">
-        <p className="text-xs text-gray-400">© 2024 StreamTunes. All rights reserved.</p>
-        <nav className="sm:ml-auto flex gap-4 sm:gap-6">
-          <a className="text-xs hover:underline underline-offset-4 text-gray-400 hover:text-purple-400" href="#">
-            Terms of Service
-          </a>
-          <a className="text-xs hover:underline underline-offset-4 text-gray-400 hover:text-purple-400" href="#">
-            Privacy
-          </a>
-        </nav>
+
+      <footer className="p-6 text-center text-gray-500 text-sm">
+        &copy; {new Date().getFullYear()} MusePlay. All rights reserved.
       </footer>
     </div>
   );
